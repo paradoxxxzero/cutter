@@ -1,4 +1,4 @@
-from _ import cut, flatten
+from _ import cut, flatten, _
 
 
 def test_cut_list_of_dict():
@@ -8,11 +8,35 @@ def test_cut_list_of_dict():
         {'z': 5, 'a': 0, 'b': 3, 5: 'foo'}
     ]
     assert cut(list_of_dict)['a'] == ['a', None, 0]
+    assert cut(list_of_dict)['a'][2] == 0
+    assert cut(list_of_dict)['a', 2] == []
+    assert cut(list_of_dict).a == ['a', None, 0]
     assert cut(list_of_dict)['b'] == [2, 3]
+    assert cut(list_of_dict).b == [2, 3]
     assert cut(list_of_dict)['j'] == []
+    assert cut(list_of_dict).j == []
     assert cut(list_of_dict)[5] == ['foo']
     assert cut(list_of_dict)[2] == []
     assert cut(list_of_dict)[0] == [0]
+
+
+def test_underscore():
+    list_of_dict = [
+        {'a': 'a', 'b': 2, 0: 0},
+        {'a': None, 'c': 4},
+        {'z': 5, 'a': 0, 'b': 3, 5: 'foo'}
+    ]
+    assert list_of_dict % _['a'] == ['a', None, 0]
+    # assert list_of_dict % _['a'][2] == 0
+    assert list_of_dict % _['a', 2] == []
+    assert list_of_dict % _.a == ['a', None, 0]
+    assert list_of_dict % _['b'] == [2, 3]
+    assert list_of_dict % _.b == [2, 3]
+    assert list_of_dict % _['j'] == []
+    assert list_of_dict % _.j == []
+    assert list_of_dict % _[5] == ['foo']
+    assert list_of_dict % _[2] == []
+    assert list_of_dict % _[0] == [0]
 
 
 def test_cut_list_of_list():
@@ -42,6 +66,7 @@ def test_cut_list_of_obj():
     ]
 
     assert cut(list_of_obj)['at1'] == [1, 2, [2., 4]]
+    assert cut(list_of_obj).at1 == [1, 2, [2., 4]]
     assert cut(list_of_obj)['at2'] == [23, 'bar', 23, {}]
     assert cut(list_of_obj)['at3'] == [None, None]
     assert cut(list_of_obj)['at5'] == []
@@ -82,8 +107,8 @@ def test_complex_cuts_list_of_dicts_of_list_of_dicts():
             {'b': 'u', 'd': None, 'a': {'p': 2, 'T': 12}}],
          },
         {'B': [
-            {'p': 'a', 'e': '_', 'b': ''},
-            {'a': {'T': 4, 'a': 3}, 'b': 17}
+            {'a': {'T': 4, 'a': 3}, 'b': 17},
+            {'p': 'a', 'e': '_', 'b': ''}
         ],
         'D': [
             {'c': '0', 'z': 'w'},
@@ -91,5 +116,7 @@ def test_complex_cuts_list_of_dicts_of_list_of_dicts():
          }
     ]
     assert cut(list_complex)['A', ..., 'b'] == [1, 12]
-    assert cut(list_complex)['B', ..., 'b'] == ['u', '', 17]
+    assert cut(list_complex)['B', ..., 'b'] == ['u', 17, '']
     assert cut(list_complex)['B', ..., 'a', 'T'] == [12, 4]
+    assert cut(list_complex)['B', 1:, ..., 'a', 'T'] == [12]
+    assert cut(list_complex)['B', :1, ..., 'a', 'T'] == [4]
