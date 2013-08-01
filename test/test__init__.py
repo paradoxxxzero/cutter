@@ -1,4 +1,4 @@
-from _ import cut, flatten, _
+from cutter import cut, flatten, _
 
 
 def test_cut_list_of_dict():

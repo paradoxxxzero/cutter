@@ -1,6 +1,27 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint
+# This file is part of cutter
+#
+# Python list cutter tool
+# Copyright © 2013 Florian Mounier
+#
+# This library is free software: you can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your option) any
+# later version.
+#
+# This library is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+# details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with pygal. If not, see <http://www.gnu.org/licenses/>.
+"""
+cutter - Python list cutter tool
 
+"""
+
+__version__ = '0.1'
 
 class EllipsisGetter(object):
     def __getitem__(self, key):
@@ -52,7 +73,7 @@ class cut(list):
             if isinstance(item, dict):
                 return item.get(index, getattr(item, str(index), void))
             return getattr(item, str(index), void)
-        return list(filter(lambda x: x is not void, map(cut_item, iterable)))
+        return list([x for x in map(cut_item, iterable) if x is not void])
 
     def __getitem__(self, key):
         if not is_iterable(key):
@@ -62,11 +83,6 @@ class cut(list):
     def __getattr__(self, key):
         key = key,
         return self._cut(self, *key)
-
-
-def dmp(thing):
-    """Pretty print an object content"""
-    pprint({key: getattr(thing, key) for key in dir(thing)})
 
 
 class ReverseCut(object):
@@ -88,6 +104,3 @@ class SimpleGetItem(object):
 
 
 _ = SimpleGetItem()
-
-# Use this with import _ as sthg
-__builtins__['_'] = SimpleGetItem()
