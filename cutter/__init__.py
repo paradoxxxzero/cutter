@@ -48,8 +48,7 @@ def flatten(iterable):
     ] if is_iterable(iterable) else [iterable]
 
 
-class cut(list):
-
+class attr_cut(list):
     @staticmethod
     def _cut(iterable, *args):
         """Cut a list by index or arg"""
@@ -73,15 +72,33 @@ class cut(list):
             if isinstance(item, dict):
                 return item.get(index, getattr(item, str(index), void))
             return getattr(item, str(index), void)
-        return list([x for x in map(cut_item, iterable) if x is not void])
+        # Can't use cut here because we want a real slicing list.
+        # For cut chains use [1, 2] instead of [1][2]
+        return attr_cut([
+            x for x in map(cut_item, iterable) if x is not void])
 
+    def __getattr__(self, key):
+        if key == '_':
+            self._ellipsis_at_next = True
+            return self
+
+        try:
+            object.__getattribute__(self, '_ellipsis_at_next')
+        except AttributeError:
+            key = key,
+        else:
+            key = ellipsis, key
+
+        return self._cut(self, *key)
+
+    def __call__(self, *args, **kwargs):
+        return [e(*args, **kwargs) for e in self]
+
+
+class cut(attr_cut):
     def __getitem__(self, key):
         if not is_iterable(key):
             key = key,
-        return self._cut(self, *key)
-
-    def __getattr__(self, key):
-        key = key,
         return self._cut(self, *key)
 
 
@@ -90,7 +107,7 @@ class ReverseCut(object):
     def __init__(self, key):
         self.key = key
 
-    def __rmod__(self, it):
+    def __ror__(self, it):
         return cut(it)[self.key]
 
 
