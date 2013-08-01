@@ -98,22 +98,21 @@ def test_complex_cuts_list_of_dicts_of_dicts():
 
 def test_complex_cuts_list_of_dicts_of_list_of_dicts():
     list_complex = [
-        {'A': [
-            {'b': 1, 'c': 2},
-            {'b': 12, 'd': 21}
-        ],
-        'B': [
-            {'a': 0, 'c': 2},
-            {'b': 'u', 'd': None, 'a': {'p': 2, 'T': 12}}],
-         },
-        {'B': [
-            {'a': {'T': 4, 'a': 3}, 'b': 17},
-            {'p': 'a', 'e': '_', 'b': ''}
-        ],
-        'D': [
-            {'c': '0', 'z': 'w'},
-            {'c': 'u', 'p': 'u'}],
-         }
+        {
+            'A': [
+                {'b': 1, 'c': 2},
+                {'b': 12, 'd': 21}],
+            'B': [
+                {'a': 0, 'c': 2},
+                {'b': 'u', 'd': None, 'a': {'p': 2, 'T': 12}}],
+        }, {
+            'B': [
+                {'a': {'T': 4, 'a': 3}, 'b': 17},
+                {'p': 'a', 'e': '_', 'b': ''}],
+            'D': [
+                {'c': '0', 'z': 'w'},
+                {'c': 'u', 'p': 'u'}],
+        }
     ]
     assert cut(list_complex)['A', ..., 'b'] == [1, 12]
     assert cut(list_complex)['B', ..., 'b'] == ['u', 17, '']
