@@ -12,6 +12,12 @@ list_of_list = [
     list(range(12, 37, 3))
 ]
 
+list_of_tuple = [
+    tuple(range(4)),
+    tuple(reversed(range(4))),
+    tuple(range(12, 37, 3))
+]
+
 
 class attr_cls(object):
     def __init__(self, **kwargs):
@@ -77,8 +83,11 @@ def test_cut_list_of_dict():
 
 
 def test_cut_cut():
+    assert cut(list_of_dict) == list_of_dict
+    assert cut(list_of_dict) == cut(cut(list_of_dict))
     assert cut(list_of_dict)['a'] == cut(cut(list_of_dict))['a']
-
+    assert repr(cut(list_of_dict)) == repr(list_of_dict) + '*'
+    assert repr(cut(list_of_dict)['a']) == "['a', None, 0]" + '.'
 
 def test_cut_list_of_list():
     assert cut(list_of_list)[3] == [3, 0, 21]
@@ -86,6 +95,16 @@ def test_cut_list_of_list():
     assert cut(list_of_list)[5] == [27]
     assert cut(list_of_list)[50] == []
     assert cut(list_of_list)[0] == [0, 3, 12]
+    assert cut(list_of_list)[:2] == [[0, 1], [3, 2], [12, 15]]
+
+
+def test_cut_list_of_tuple():
+    assert cut(list_of_tuple)[3] == [3, 0, 21]
+    assert cut(list_of_tuple)[1] == [1, 2, 15]
+    assert cut(list_of_tuple)[5] == [27]
+    assert cut(list_of_tuple)[50] == []
+    assert cut(list_of_tuple)[0] == [0, 3, 12]
+    assert cut(list_of_tuple)[:2] == [(0, 1), (3, 2), (12, 15)]
 
 
 def test_cut_list_of_obj():

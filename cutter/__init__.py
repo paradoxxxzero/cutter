@@ -21,7 +21,8 @@ cutter - Python list cutter tool
 
 """
 
-__version__ = '0.1'
+__version__ = '0.2'
+
 
 class EllipsisGetter(object):
     def __getitem__(self, key):
@@ -63,14 +64,15 @@ class attr_cut(list):
             return flatten(iterable)
 
         def cut_item(item):
-            if isinstance(item, list) and (
-                    isinstance(index, int) or isinstance(index, slice)):
-                return (
-                    list.__getitem__(item, index)
-                    if isinstance(index, slice) or len(item) > index
-                    else void)
             if isinstance(item, dict):
                 return item.get(index, getattr(item, str(index), void))
+
+            if hasattr(item, '__getitem__') and isinstance(
+                    index, (int, slice)):
+                return (
+                    item.__class__.__getitem__(item, index)
+                    if isinstance(index, slice) or len(item) > index
+                    else void)
             return getattr(item, str(index), void)
         # Can't use cut here because we want a real slicing list.
         # For cut chains use [1, 2] instead of [1][2]
@@ -94,6 +96,9 @@ class attr_cut(list):
     def __call__(self, *args, **kwargs):
         return [e(*args, **kwargs) for e in self]
 
+    def __repr__(self):
+        return "%s." % list.__repr__(self)
+
 
 class cut(attr_cut):
     def __getitem__(self, key):
@@ -101,9 +106,14 @@ class cut(attr_cut):
             key = key,
         return self._cut(self, *key)
 
+    def __getslice__(self, min, max):
+        return self._cut(self, slice(min, max))
+
+    def __repr__(self):
+        return "%s*" % list.__repr__(self)
+
 
 class ReverseCut(object):
-
     def __init__(self, key):
         self.key = key
 
@@ -112,7 +122,6 @@ class ReverseCut(object):
 
 
 class SimpleGetItem(object):
-
     def __getitem__(self, key):
         return ReverseCut(key)
 
