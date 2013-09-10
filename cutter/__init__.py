@@ -21,7 +21,7 @@ cutter - Python list cutter tool
 
 """
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 
 class EllipsisGetter(object):
@@ -50,6 +50,11 @@ def flatten(iterable):
 
 
 class attr_cut(list):
+
+    def __init__(self, iterable):
+        self._ellipsis_at_next = getattr(iterable, '_ellipsis_at_next', False)
+        super(attr_cut, self).__init__(iterable)
+
     @staticmethod
     def _cut(iterable, *args):
         """Cut a list by index or arg"""
@@ -74,22 +79,29 @@ class attr_cut(list):
                     if isinstance(index, slice) or len(item) > index
                     else void)
             return getattr(item, str(index), void)
-        # Can't use cut here because we want a real slicing list.
-        # For cut chains use [1, 2] instead of [1][2]
-        return attr_cut([
+
+        if not any(is_iterable(item) for item in iterable):
+            # Can't use cut here because if nothing is iterable in the iterable
+            # we want a real slicing list.
+            # For cut chains use [1, 2] instead of [1][2]
+            cut_cls = attr_cut
+        else:
+            cut_cls = cut
+        return cut_cls([
             x for x in map(cut_item, iterable) if x is not void])
 
     def __getattr__(self, key):
+        if key == '_ellipsis_at_next':
+            return object.__getattribute__(self, '_ellipsis_at_next')
+
         if key == '_':
             self._ellipsis_at_next = True
             return self
 
-        try:
-            object.__getattribute__(self, '_ellipsis_at_next')
-        except AttributeError:
-            key = key,
-        else:
+        if self._ellipsis_at_next:
             key = ellipsis, key
+        else:
+            key = key,
 
         return self._cut(self, *key)
 

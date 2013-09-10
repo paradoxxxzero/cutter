@@ -61,12 +61,41 @@ list_of_dict_of_list_of_dict = [
     }
 ]
 
+
+list_of_list_of_list_of_list = [
+    [
+        [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9]
+        ], [
+            [10, 11, 12],
+            [13, 14, 15],
+            [16, 17, 18]
+        ]
+    ],
+    [
+        [
+            [19, 20, 21],
+            [22, 23, 24],
+            [25, 26, 27]
+        ],
+        [
+            [28, 29, 30],
+            [31, 32, 33],
+            [34, 35, 36]
+        ]
+    ]
+]
+
+
 class Cls(object):
     def __init__(self, attr):
         self.attr = attr
 
     def get_upper_attr(self):
         return self.attr.upper()
+
 
 def test_cut_list_of_dict():
     assert cut(list_of_dict)['a'] == ['a', None, 0]
@@ -88,6 +117,7 @@ def test_cut_cut():
     assert cut(list_of_dict)['a'] == cut(cut(list_of_dict))['a']
     assert repr(cut(list_of_dict)) == repr(list_of_dict) + '*'
     assert repr(cut(list_of_dict)['a']) == "['a', None, 0]" + '.'
+
 
 def test_cut_list_of_list():
     assert cut(list_of_list)[3] == [3, 0, 21]
@@ -137,6 +167,27 @@ def test_complex_cuts_list_of_dicts_of_list_of_dicts():
     assert cut(list_of_dict_of_list_of_dict)['B', :1, ..., 'a', 'T'] == [4]
 
 
+def test_complex_cuts_list_of_list_of_list_of_list():
+    assert cut(list_of_list_of_list_of_list)[1] == [
+        [[10, 11, 12], [13, 14, 15], [16, 17, 18]],
+        [[28, 29, 30], [31, 32, 33], [34, 35, 36]]]
+
+    assert cut(list_of_list_of_list_of_list)[1, 1] == [
+        [13, 14, 15], [31, 32, 33]
+    ]
+    assert cut(list_of_list_of_list_of_list)[1, 1] == (
+        cut(list_of_list_of_list_of_list)[1][1])
+
+    assert cut(list_of_list_of_list_of_list)[1, 1, 1] == [
+        14, 32
+    ]
+    assert cut(list_of_list_of_list_of_list)[1, 1, 1] == (
+        cut(list_of_list_of_list_of_list)[1][1][1])
+
+    assert cut(list_of_list_of_list_of_list)[1, 1, 1, 1] == []
+
+    assert cut(list_of_list_of_list_of_list)[...] == list(range(1, 37))
+
 def test_cls():
     cls = [Cls('a'), Cls('r'), Cls('s')]
     assert cut(cls).attr == list('ars')
@@ -146,6 +197,14 @@ def test_chain():
     cls = [Cls([Cls('a'), Cls('h')]), Cls([Cls('s'), Cls('u')])]
     assert cut(flatten(cut(cls).attr)).attr == list('ahsu')
     assert cut(cls).attr._.attr == list('ahsu')
+
+    assert cut(cut(cls).attr) == cut(cls).attr
+    assert cut(cut(cls).attr)._.attr == cut(cls).attr._.attr
+    assert cut(cut(cls).attr._) == cut(cls).attr._
+    assert cut(cut(cls).attr._)._ellipsis_at_next == cut(
+        cls).attr._._ellipsis_at_next
+    assert cut(cut(cls).attr._).attr == cut(cls).attr._.attr
+    assert cut(cut(cut(cls).attr)._).attr == cut(cls).attr._.attr
 
 
 def test_call():
