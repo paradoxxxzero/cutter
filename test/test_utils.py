@@ -3,9 +3,34 @@ from cutter.utils import bang_compile
 from .test__init__ import (
     list_of_dict, list_of_list, list_of_tuple, list_of_obj, Cls,
     list_of_list_of_list_of_list)
+import sys
 
 
 cls = [Cls([Cls('a'), Cls('h')]), Cls([Cls('s'), Cls('u')])]
+
+
+def test_bang_compile_exec():
+    scope = {'cut': cut}
+    source = '''a = ['abc', 'def', 'ghi']
+b = []
+print('Test tokenizer !!')
+for i in range(3):
+    b.append(str(a!2))
+b.append('End')
+'''
+    code = bang_compile(source, '<test>', 'exec')
+
+    if sys.version_info[0] > 2:
+        exec(code, scope, scope)
+    else:
+        exec('exec code in scope, scope')
+    assert 'a' in scope
+    assert 'b' in scope
+    assert scope['b'] == [
+        "['c', 'f', 'i'].",
+        "['c', 'f', 'i'].",
+        "['c', 'f', 'i'].",
+        'End']
 
 
 def run(code):

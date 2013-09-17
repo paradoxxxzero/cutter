@@ -19,7 +19,7 @@ def tokenize_bang(source):
     stream.seek(0)
     tokenized = []
     last_token = ''
-    for token_type, token, srowcol, _, _ in generate_tokens(stream.read):
+    for token_type, token, srowcol, _, _ in generate_tokens(stream.readline):
         if token_type == ERRORTOKEN and token == '!' and srowcol != (1, 0):
             tokenized.append((OP, '.'))
             if last_token == '\x00':
