@@ -95,5 +95,5 @@ cut(list)[:5]
 
 For more examples see the test files : [test](/test)
 
-Cutter is compatible with at least: python 2.6, 2.7, 3.2, 3.3, 3.4 and pypy and is licensed under [mit license](http://opensource.org/licenses/MIT)
+Cutter is compatible with at least: python 2.6, 2.7, 3.2, 3.3, 3.4 and pypy and is licensed under [lgpl v3](http://www.gnu.org/licenses/lgpl.html)
 
