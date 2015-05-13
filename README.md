@@ -34,9 +34,9 @@ numbers = [
 
 ## Syntaxic sugars
 
-There are two syntaxic sugar for an even easier use:
+There are two syntaxic sugars for an even easier use:
 
-### The _| syntax
+### The |_ syntax
 
 ```python
 from cutter import _
