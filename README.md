@@ -93,7 +93,7 @@ This is at your own risk but you can add:
     except ImportError:
         pass
     else:
-        sys.ps1 = "\033[1;36m!\033[1;32m>> \033[1;37m"
+        sys.ps1 = "\001\033[1;36m\002!\001\033[1;32m\002>> \001\033[1;37m\002"
         codeop.compile = bang_compile
         cut_as_builtin()
         try:
