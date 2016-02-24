@@ -80,6 +80,32 @@ Cutter provide a `bang_compile` function which is a wrapper of the python builti
 
 This syntax use the python tokenizer and ast to make it work. This is really useful when debugging to inspect list content.
 
+### Use the ! syntax in interpreter
+
+This is at your own risk but you can add:
+
+```python
+
+    try:
+        from cutter.utils import bang_compile, cut_as_builtin
+        from code import InteractiveConsole
+        import codeop
+    except ImportError:
+        pass
+    else:
+        sys.ps1 = "\033[1;36m!\033[1;32m>> \033[1;37m"
+        codeop.compile = bang_compile
+        cut_as_builtin()
+        try:
+            InteractiveConsole().interact('')
+        except Exception:
+            from traceback import print_exc
+            print_exc()
+        sys.exit(0)
+```
+
+in your `~/.pythonrc`
+
 ### More
 
 Cutter works with dictionaries too:
@@ -96,4 +122,3 @@ cut(list)[:5]
 For more examples see the test files : [test](/test)
 
 Cutter is compatible with at least: python 2.6, 2.7, 3.2, 3.3, 3.4 and pypy and is licensed under [lgpl v3](http://www.gnu.org/licenses/lgpl.html)
-
