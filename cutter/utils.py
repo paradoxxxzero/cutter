@@ -73,8 +73,11 @@ def cut_as_builtin():
 
 def bang_compile(
         source, filename, mode, *args, **kwargs):
-    source_tokenized = tokenize_bang(source)
-    ast_ = ast.parse(source_tokenized, mode=mode)
-    source = CutWrapper().visit(ast_)
+    try:
+        source_tokenized = tokenize_bang(source)
+        ast_ = ast.parse(source_tokenized, mode=mode)
+        source = CutWrapper().visit(ast_)
+    except Exception:
+        pass
     rv = compile(source, filename, mode, *args, **kwargs)
     return rv

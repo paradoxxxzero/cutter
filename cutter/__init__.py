@@ -21,7 +21,7 @@ cutter - Python list cutter tool
 
 """
 
-__version__ = '0.4'
+__version__ = '0.5.0'
 
 
 class EllipsisGetter(object):
